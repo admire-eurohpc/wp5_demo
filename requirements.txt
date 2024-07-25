@@ -1,0 +1,2 @@
+moviepy==1.0.3
+piper-tts==1.2.0

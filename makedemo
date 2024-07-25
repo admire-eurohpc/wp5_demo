@@ -1,0 +1,142 @@
+#!/bin/env python3
+from moviepy.editor import *
+import subprocess
+import tempfile
+import pathlib
+import json
+
+class Scene:
+	
+    def gen_audio(self, text):
+        
+        model_arg = ["--model", "en_US-lessac-medium"]
+
+        if os.path.isfile(self.script_dir  + "/en_US-lessac-medium.onnx") and os.path.isfile(self.script_dir  + "/en_US-lessac-medium.onnx.json"):
+            model_arg = ["--model", self.script_dir  + "/en_US-lessac-medium.onnx", "--config", self.script_dir  + "/en_US-lessac-medium.onnx.json"]
+
+        tmp_wav = tempfile.NamedTemporaryFile(suffix='.wav', delete=False).name
+        cmd = ["piper", "--length-scale", "1.2"] + model_arg + ["--output_file", tmp_wav]
+        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE)
+        out,err = proc.communicate(text.encode())
+        if out:
+            print('Output:', out.decode())
+        if err:
+            print('Error:', err.decode())
+        return tmp_wav
+
+
+    def __init__(self, content, text):
+
+        self.script_dir = os.path.dirname(os.path.abspath(__file__))
+
+
+        if not os.path.isfile(content):
+            script_relative = self.script_dir + "/" + content
+            print(script_relative)
+            if os.path.isfile(script_relative):
+                content = script_relative
+            else:
+                raise Exception("Cannot locate media content {}".format(content))
+
+        print("Processing {} ...".format(content))
+
+        # Generate TTS
+        self.wav = self.gen_audio(text)
+        # Load the clip
+        self.audio = AudioFileClip(self.wav)
+
+        # Now handle the media
+
+        # Get its type
+        ext = str(pathlib.Path(content).suffix)
+
+        images_exts = [".png", ".jpg", ".jpeg"]
+        movie_exts = [".mp4", ".avi", ".mpeg", ".mpg"]
+
+        supported_exts = images_exts + movie_exts
+
+        if ext not in supported_exts:
+            raise Exception("{} with extention '{}' is not in supported extensions {}".format(content, ext, supported_exts))
+
+        self.fps = 24
+
+        # Now set duration in function of the media type
+        if ext in images_exts:
+            # Images last their audio duration
+            self.duration = self.audio.duration
+            self.media = ImageClip(content).set_duration(self.duration)
+        elif ext in movie_exts:
+            self.media = VideoFileClip(content)
+            # We now want video and audio to have same duration
+            dur_ratio =  self.media.duration / self.audio.duration
+            print("Media {} audio duration {} video duration {} applying video acceleration of {}".format(content, self.media.duration, self.audio.duration, dur_ratio))
+            self.media =self.media.fx(vfx.speedx, dur_ratio)
+            self.duration = self.audio.duration
+            self.fps = self.media.fps
+
+
+        self.media = self.media.set_audio(self.audio)
+
+        print("\tDONE duration {} resolution {}x{}".format(self.duration, self.media.w, self.media.h))
+
+
+
+    def render(self, outfile):
+        self.media.write_videofile(outfile, fps=self.fps)
+
+    def clip(self):
+        return self.media
+    
+    def resize(self, w, h):
+        self.media = self.media.resize(width=w, height=h)
+
+
+
+class Demo:
+
+    def check_json(jsondat):
+        for v in jsondat:
+            for field in ["media", "text"]:
+                if not field in v:
+                    raise Exception("Error in input JSON, {} should contain a 'media' field".format(v))
+
+    def __init__(self, videodesc, outfile):
+        with open(videodesc, "r") as f:
+            scene_descs = json.load(f)
+        Demo.check_json(scene_descs)
+        self.scenes = [ Scene(x["media"], x["text"]) for x in scene_descs]
+        self.outfile = outfile
+
+    def scale_to_smallest(self):
+        minw = min([x.media.w for x in self.scenes])
+       
+        for s in self.scenes:
+            print("Scene is {} x {}".format(s.media.w, s.media.h))
+            if s.media.w != minw:
+                neww = minw
+                newh = s.media.h * (minw / s.media.w)
+                print("Resizing scene to {} x {}".format(neww, newh))
+                s.resize(neww, newh)
+
+
+
+    def render(self):
+        self.scale_to_smallest()
+
+        clips = [x.clip().crossfadein(1) for x in self.scenes]
+
+        demo = concatenate_videoclips(clips,method="compose")
+        demo.write_videofile(self.outfile)
+
+
+if len(sys.argv) != 3:
+    print("Error: Please provide a JSON definition file to process and the output file name\n./makedemo ./video.json ./out.mp4")
+    sys.exit(1)
+
+jsonf = sys.argv[1]
+outf = sys.argv[2]
+
+
+demo = Demo(jsonf, outf)
+
+demo.render()
