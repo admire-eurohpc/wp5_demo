@@ -1,0 +1,39 @@
+[
+	{
+		"media" : "media/intro.jpg",
+		"text" : "Welcome to our demonstration, showcasing the advancements achieved by Work Package 5 in the ADMIRE Euro-HPC project. This segment focuses on monitoring, modeling, and profiling. Before we proceed, let's revisit the challenges that have driven our innovation and development."
+	},
+	{
+		"media" : "media/WP5_DEMO_MOLDABILITY.m4v",
+		"text" : "When running a program across multiple nodes, the amount of parallel resources it utilizes can vary. This is true for discrete devices like GPUs as well as system-scale resources like IOs. In the example presented, we have a job running over time, depicted by the blue and gray boxes, showing that the program is not fully utilizing the available resources. In a standard MPMD (Multiple Program Multiple Data) scenario, as commonly seen in current HPC systems, this underutilization results in wasted resources. The objective of our monitoring work package, and the broader ADMIRE initiative, is to identify these inefficiencies to enable the use of malleable payloads. Malleable payloads are programs capable of dynamically reshaping themselves over time, as illustrated by the yellow boxes in our example. This innovative approach allows jobs to coordinate and share system resources gracefully, significantly enhancing overall efficiency while remaining transparent to the end-user."
+	},
+	{
+		"media" : "media/space_time.m4v",
+		"text" : "When monitoring a parallel program running on a supercomputer, the volume of collected metrics is crucial. We don't just monitor the system as a whole; we also track its performance over time. This results in a combinatorial explosion of performance data that needs to be managed. To address this challenge, we have designed and implemented highly scalable approaches to maintain the temporal perspective necessary for making informed malleability decisions."
+	},
+	{
+		"media" : "media/WP5_DEMO_JOB_LEVEL.m4v",
+		"text" : "In addition, when examining the machine state more closely, each node must be considered individually, with slots (or more practically, cores) serving as the allocation units recognized by the batch manager, also referred to as the number of processes. Therefore, in conjunction with space and time, we must also meticulously monitor individual jobs running across the entire system. This comprehensive monitoring enables the central component of the ADMIRE system, the intelligent controller, to make well-informed decisions."
+	},
+	{
+		"media" : "media/WP5_DEMO_PROXY_ARCH.m4v",
+		"text" : "At the center of our monitoring infrastructure is the metric proxy. This essential tool collects metrics and forwards them in a scalable manner, effectively monitoring distributed jobs as they come and go. The metric proxy can consume data from existing Prometheus exporters and is responsible for monitoring the state of each node. The proxy is capable of forwarding these data to various consumers. First, it can send data to a Prometheus instance. Second, it can forward trace data, capturing detailed execution flows. Additionally, the proxy can generate profiles that abstract the temporal dimension, which are then used to create scalability performance models."
+	},
+	{
+		"media" : "media/WP5_DEMO_PROXY_TBON.m4v",
+		"text" : "To meet the measurement needs of the proxy, we utilized the limitless tree-based overlay network infrastructure. This innovative solution allows data to be reduced over space, facilitating high-frequency monitoring of a large number of machines in a scalable manner. Thanks to this infrastructure, we can dynamically obtain the current state of jobs while reducing hundreds of metrics every second. This enables a comprehensive global view of the system without sacrificing detailed per-node insights. At the root level, these data are stored in per-job and per-node traces, as well as profiles for each job. Additionally, the proxy can act as a model server, ensuring efficient data handling and analysis across the entire monitoring infrastructure."
+	},
+	{
+		"media" : "media/profiles.ogv",
+		"text" : "The proxy features an interactive HTML interface, enabling users to monitor its state effectively. Proxies are organized in a tree-based overlay network, reducing data toward a root proxy that performs the final data storage. This setup allows for real-time job monitoring. For instance, when we launch a benchmark job, we can observe the counters updating nearly in real time, providing immediate insights into system performance and job status."
+	},
+	{
+		"media" : "media/profview.ogv",
+		"text" : "The final state of each job, called a profile, is stored and gathered through command lines. This enables monitoring and comparison of executions while generating models. This process creates an extensive catalog of previous executions for a given program across various scales and configurations. Later, we will demonstrate how Extrap can be used to create models from this data, further enhancing our understanding and optimization of job performance."
+	},
+	{
+		"media" : "media/trace.ogv",
+		"text" : "In complement, real-time profiling data are aggregated into traces. These traces are of limited size and are resampled on the fly, prioritizing storage efficiency over temporal resolution. By examining the current job, we can access historical data for various metrics, allowing us to observe trends and changes over time. The proxy can also derive data over time to compute bandwidth. Additionally, past jobs are stored in binary traces, providing a rich dataset for analysis. This comprehensive collection of data supports the malleability decisions made by the intelligent controller, ensuring optimal resource allocation and system performance."
+	}
+
+]
