@@ -9,7 +9,7 @@ class Scene:
 	
     def gen_audio(self, text):
         
-        model_name = "en_US-kristin-medium"
+        model_name = "en_US-lessac-medium"
 
         model_arg = ["--model", model_name]
 
@@ -17,7 +17,7 @@ class Scene:
             model_arg = ["--model", self.script_dir  + "/{}.onnx".format(model_name), "--config", self.script_dir  + "/{}.onnx.json".format(model_name)]
 
         tmp_wav = tempfile.NamedTemporaryFile(suffix='.wav', delete=False).name
-        cmd = ["piper"] + model_arg + ["--output_file", tmp_wav]
+        cmd = ["piper", "--length-scale", "0.9"] + model_arg + ["--output_file", tmp_wav]
         proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE)
         out,err = proc.communicate(text.encode())
         if out:
@@ -53,7 +53,7 @@ class Scene:
         ext = str(pathlib.Path(content).suffix)
 
         images_exts = [".png", ".jpg", ".jpeg"]
-        movie_exts = [".mp4", ".avi", ".mpeg", ".mpg"]
+        movie_exts = [".mp4", ".avi", ".mpeg", ".mpg", ".m4v", ".ogv"]
 
         supported_exts = images_exts + movie_exts
 
@@ -111,24 +111,33 @@ class Demo:
 
     def scale_to_smallest(self):
         minw = min([x.media.w for x in self.scenes])
-       
+        minh = min([x.media.h for x in self.scenes])
+ 
         for s in self.scenes:
             print("Scene is {} x {}".format(s.media.w, s.media.h))
             if s.media.w != minw:
                 neww = minw
                 newh = s.media.h * (minw / s.media.w)
+
+                if newh > minh:
+                    newh = minh
+                    neww = s.media.w * (minh / s.media.h)
                 print("Resizing scene to {} x {}".format(neww, newh))
                 s.resize(neww, newh)
 
 
 
-    def render(self):
+    def render(self, fps=None):
         self.scale_to_smallest()
 
-        clips = [x.clip().crossfadein(1) for x in self.scenes]
+        #clips = [x.clip().crossfadein(1) for x in self.scenes]
+        clips = [x.clip() for x in self.scenes]
+
+        if fps is None:
+            fps = max([x.clip().fps for x in self.scenes if type(x.clip()) is VideoFileClip] + [24])
 
         demo = concatenate_videoclips(clips,method="compose")
-        demo.write_videofile(self.outfile)
+        demo.write_videofile(self.outfile,fps=fps)
 
 
 if len(sys.argv) != 3:
@@ -141,4 +150,4 @@ outf = sys.argv[2]
 
 demo = Demo(jsonf, outf)
 
-demo.render()
+demo.render(fps=8)
