@@ -5,7 +5,7 @@
 	},
 	{
 		"media" : "media/WP5_DEMO_MOLDABILITY.m4v",
-		"text" : "When running a program across multiple nodes, the amount of parallel resources it utilizes can vary. This is true for discrete devices like GPUs as well as system-scale resources like IOs. In the example presented, we have a job running over time, depicted by the blue and gray boxes, showing that the program is not fully utilizing the available resources. In a standard MPMD (Multiple Program Multiple Data) scenario, as commonly seen in current HPC systems, this underutilization results in wasted resources. The objective of our monitoring work package, and the broader ADMIRE initiative, is to identify these inefficiencies to enable the use of malleable payloads. Malleable payloads are programs capable of dynamically reshaping themselves over time, as illustrated by the yellow boxes in our example. This innovative approach allows jobs to coordinate and share system resources gracefully, significantly enhancing overall efficiency while remaining transparent to the end-user."
+		"text" : "When running a program across multiple nodes, resource utilization can vary. GPUs and IOs are not always fully utilized. In a Multi-Program Multiple Data scenario, this underutilization leads to wasted resources. The ADMIRE project aims to identify these inefficiencies, enabling the use of malleable payloads. Malleable payloads dynamically reshape themselves over time, like the yellow boxes in our example. This approach coordinates jobs and shares system resources, enhancing overall efficiency while remaining transparent."
 	},
 	{
 		"media" : "media/space_time.m4v",
@@ -29,11 +29,25 @@
 	},
 	{
 		"media" : "media/profview.ogv",
-		"text" : "The final state of each job, called a profile, is stored and gathered through command lines. This enables monitoring and comparison of executions while generating models. This process creates an extensive catalog of previous executions for a given program across various scales and configurations. Later, we will demonstrate how Extrap can be used to create models from this data, further enhancing our understanding and optimization of job performance."
+		"text" : "The final state of each job, called a profile, is stored and gathered through command lines. This enables monitoring and comparison of executions while generating models. This process creates an extensive catalog of previous executions for a given program across various scales and configurations. Later, we will demonstrate how Extra-P can be used to create models from this data, further enhancing our understanding and optimization of job performance."
 	},
 	{
 		"media" : "media/trace.ogv",
 		"text" : "In complement, real-time profiling data are aggregated into traces. These traces are of limited size and are resampled on the fly, prioritizing storage efficiency over temporal resolution. By examining the current job, we can access historical data for various metrics, allowing us to observe trends and changes over time. The proxy can also derive data over time to compute bandwidth. Additionally, past jobs are stored in binary traces, providing a rich dataset for analysis. This comprehensive collection of data supports the malleability decisions made by the intelligent controller, ensuring optimal resource allocation and system performance."
+	},
+	{
+		"media" : "media/WP5_DEMO_PROXY_MODEL.m4v",
+		"text" : "Performance modeling is a crucial aspect of the metric proxy, as it provides the intelligent controller with valorized data, enabling quick and informed decisions while avoiding data deluge. The proxy constantly valorizes performance data through two key methods: Extra-P: This tool allows scalability predictions by analyzing previous executions of a given program at various scales. By leveraging Extra-P, the intelligent controller can predict metrics at unknown scales, practically supporting malleability and optimizing resource allocation. FT-IO: This innovative tool, developed within ADMIRE, performs performance analysis in the frequency domain. FT-IO creates compact temporal descriptors for periodic signals, enabling behavioral prediction over the temporal axis, including bursts and contention. Thus, the proxy also functions as a model gateway, with interfaces (HTTP REST and Mercury) to support the intelligent controller's decisions. This approach prevents the forwarding of raw performance data, which can be challenging to consume and interpret at scale, thereby streamlining the decision-making process and enhancing overall system efficiency."
+	},
+	{
+		"media" : "media/model.ogv",
+		"text" : "In this example, we can see the HTML interface of the model server for Extra-P scalability models. Each job is associated with a transversal model representing its scalability and is grouped by command-line. The interface allows not only the retrieval of these models but also enables performance projection using the regression models, similar to the Extra-P interface. This always-on modeling process within the proxy is a key element in the ADMIRE malleability decision-making process. By providing continuous scalability projections and performance insights, it ensures that the intelligent controller can make informed, efficient, and adaptive resource management decisions."
+	},
+	{
+		"media" : "media/oss.jpg",
+		"text" : "All tools developed by Work Package 5 are available in the ADMIRE GitHub repository as open-source software. This collaborative initiative provides a robust set of tools that will be maintained by the various project partners, ensuring ongoing improvements and support. By making these tools publicly accessible, we aim to foster a collaborative environment that enhances the capabilities and efficiency of supercomputing resources."
 	}
+
+
 
 ]

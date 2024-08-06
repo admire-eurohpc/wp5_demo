@@ -150,4 +150,4 @@ outf = sys.argv[2]
 
 demo = Demo(jsonf, outf)
 
-demo.render(fps=8)
+demo.render()
