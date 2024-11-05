@@ -53,7 +53,7 @@ class Scene:
         ext = str(pathlib.Path(content).suffix)
 
         images_exts = [".png", ".jpg", ".jpeg"]
-        movie_exts = [".mp4", ".avi", ".mpeg", ".mpg", ".m4v", ".ogv"]
+        movie_exts = [".mkv", ".mp4", ".avi", ".mpeg", ".mpg", ".m4v", ".ogv"]
 
         supported_exts = images_exts + movie_exts
 
